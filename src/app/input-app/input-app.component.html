@@ -1,0 +1,17 @@
+<div class="row">
+    <div class="col-12">
+        <label class="">{{ lable }}</label>
+
+        <input
+            class="form-control text-end"
+            [class.border-danger]="isInvalid"
+            [(ngModel)]="internalValue"
+            (ngModelChange)="onValueChange()"
+            type="number"
+            #myInput
+        />
+        <div *ngIf="isInvalid" class="text-danger">
+            This field is required!
+        </div>
+    </div>
+</div>

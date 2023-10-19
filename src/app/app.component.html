@@ -1,0 +1,46 @@
+<div class="container d-flex flex-column align-items-center p-4 ">
+    <div class="row d-flex justify-content-center text-center">Trading view</div>
+    <form (submit)="onSubmit()">
+        <div class="col-12 mb-2">
+            <input-app #vcInput1
+                       lable="number 1"
+                       (eventValueChange)="setValueInput1($event)"
+            ></input-app>
+        </div>
+        <div class="col-12">
+            <input-app #vcInput2
+                       lable="number 2"
+                       (eventValueChange)="setValueInput2($event)"
+            ></input-app>
+        </div>
+        <div class="d-flex justify-content-start gap-2">
+
+            <button-app name="+" color="btn-primary"
+                        [isEnable]=isInputValid
+                        (dataEvent)="receiveData($event)">
+            </button-app>
+            <button-app name="-" color="btn-secondary"
+                        [isEnable]="isInputValid"
+                        (dataEvent)="receiveData($event)"
+            ></button-app>
+            <button-app name="x" color="btn-success"
+                        [isEnable]="isInputValid"
+                        (dataEvent)="receiveData($event)"
+            ></button-app>
+            <button-app name="/" color="btn-danger"
+                        [isEnable]="isInputValid"
+                        (dataEvent)="receiveData($event)"
+            ></button-app>
+            <!--      <button (click)="clickButton.sendData()"> /</button>-->
+            <!--      <button (click)="toggleInside()"> /</button>-->
+
+
+        </div>
+        <div class="row mt-3">
+            <div class="col-12">
+                Result: {{result}}
+            </div>
+        </div>
+    </form>
+    <app-sign-in-rf></app-sign-in-rf>
+</div>

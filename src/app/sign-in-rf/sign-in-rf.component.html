@@ -1,0 +1,36 @@
+<form [formGroup]="signInForm" class="" (ngSubmit)="onSubmit()">
+    <div class="row gy-4 gx-4 mt-4">
+        <div class="col-12">
+            <label class="mb-2">User name</label>
+            <input [formControlName]="'username'"
+                   class="form-control"
+                   placeholder="User name"
+            />
+        </div>
+        <div class="col-12">
+            <label class="mb-2">Password</label>
+            <input [formControlName]="'password'"
+                   class="form-control"
+                   placeholder="Password"
+                   type="password"
+            />
+            <div *ngIf="signInForm.get('password').invalid && signInForm.get('password').touched" class="text-danger">
+                Password is required ....
+            </div>
+        </div>
+
+        <div class="col-12 d-flex flex-row align-items-center ">
+            <input [formControlName]="'rememberMe'"
+                   class="me-2"
+                   type="checkbox"
+            />
+            <label>Remember Me</label>
+        </div>
+
+        <div class="col-12 d-flex align-items-center justify-content-center">
+            <button class="btn btn-primary" type="submit" [disabled]="signInForm.invalid">Sign in</button>
+        </div>
+
+    </div>
+
+</form>
