@@ -28,12 +28,10 @@ export class SignInRfComponent implements OnInit {
 
     ngOnInit(): void {
         this.signInForm = this.fb.group({
-            username: [
+            email: [
                 '',
                 Validators.compose([
-                    //Validators.required,
                     Validators.minLength(6),
-                    //Validators.pattern(/^[a-z]{6,32}$/i)
                 ])
             ],
             password: [
@@ -47,6 +45,7 @@ export class SignInRfComponent implements OnInit {
             rememberMe: false
         });
 
+        // tslint:disable-next-line:no-unused-expression
         new FormControl('', Validators.required, this.isUserNameDuplicated);
     }
 

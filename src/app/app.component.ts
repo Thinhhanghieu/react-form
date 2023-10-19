@@ -1,6 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
 import { InputAppComponent } from './input-app/input-app.component';
-
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
@@ -65,10 +64,12 @@ export class AppComponent {
                 this.resetValue();
                 this.checkValidButton();
                 this.isInputValid = true;
+                this.vcInput1.autoFocus();
                 break;
             case 'x':
                 this.result = `${value1} x ${value2} = ${value1 * value2}`;
                 this.resetValue();
+                this.vcInput1.autoFocus();
                 this.isInputValid = true;
                 break;
             case '/':
@@ -78,6 +79,7 @@ export class AppComponent {
                 }
                 this.result = `${value1} / ${value2} = ${value1 / value2}`;
                 this.resetValue();
+                this.vcInput1.autoFocus();
                 this.isInputValid = true;
                 break;
             default:
