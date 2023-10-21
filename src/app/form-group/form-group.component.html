@@ -13,15 +13,22 @@
             />
         </div>
         <div class="col-6">
-            <input [formControlName]="FC_NAME.lastname"
-                   type="text" class="form-control" placeholder="Last Name">
+            <input  [formControlName]="FC_NAME.lastname"
+                    type="text" placeholder="Last Name"
+                    class="form-control"
+            >
         </div>
     </div>
     <!--    Phone && Email-->
     <div class="row d-flex flex-row mb-2">
         <div class="col-6">
             <input [formControlName]="FC_NAME.phone"
-                   type="number" class="form-control" placeholder="Phone Number">
+                   type="number"
+                   class="form-control" placeholder="Phone Number"
+                   (keydown.arrowup)="(false)"
+                   (keydown.arrowdown)="(false)"
+                   (keypress)="numberOnly($event)"
+            >
             <div *ngIf="signUpForm.get(FC_NAME.phone).invalid && signUpForm.get(FC_NAME.phone).touched"
                  class="text-danger">
                 <ng-container *ngIf="signUpForm.get(FC_NAME.phone).errors"
@@ -35,14 +42,16 @@
         </div>
         <div class="col-6">
             <input [formControlName]="FC_NAME.email"
-                   type="email" class="form-control" placeholder="Email">
+                   type="email" placeholder="Email"
+                   class="form-control"
+            >
             <div *ngIf="signUpForm.get(FC_NAME.email).invalid && signUpForm.get(FC_NAME.email).touched"
                  class="text-danger">
                 <ng-container *ngIf="signUpForm.get(FC_NAME.email).errors"
                               [ngTemplateOutlet]="tmplErrorMessage"
                               [ngTemplateOutletContext]="{
-                            message:signUpForm.get(FC_NAME.email).errors.message
-                          }
+                                message:signUpForm.get(FC_NAME.email).errors.message
+                              }
             "
                 ></ng-container>
             </div>
@@ -50,29 +59,49 @@
     </div>
     <!--    Password-->
     <div class="form-group col-md-12 d-flex flex-column gap-2 mb-2">
-        <input [formControlName]="FC_NAME.password"
-               type="password"
-               class="form-control" placeholder="New password">
-        <div *ngIf="signUpForm.get(FC_NAME.password).invalid && signUpForm.get(FC_NAME.password).touched"
-             class="text-danger">
+        <div class="col-md-12 d-flex position-relative">
+                    <input  [formControlName]="FC_NAME.password"
+                            [type]="showPassword ? 'text' : 'password'"  placeholder="New password"
+                            class="form-control"
+                    >
+                        <span class="icon-input"
+                              (click)="togglePasswordVisibility()"
+                        >
+                              <i  class="bi"
+                                  [ngClass]="{'bi-eye': showPassword, 'bi-eye-slash': !showPassword}">
+                              </i>
+                        </span>
+        </div>
+        <div *ngIf="signUpForm.get(FC_NAME.password).invalid && signUpForm.get(FC_NAME.password).touched">
             <ng-container *ngIf="signUpForm.get(FC_NAME.password).errors"
-                          [ngTemplateOutlet]="tmplErrorMessage"
+                          [ngTemplateOutlet]="tmplValidatePassword"
                           [ngTemplateOutletContext]="{
-                            message: signUpForm.get(FC_NAME.password).errors.message
+                            message: signUpForm.get(FC_NAME.password).errors
                           }
             "
-            ></ng-container>
+            >
+            </ng-container>
         </div>
     </div>
-    <div class="form-group col-md-12 d-flex flex-column gap-2 mb-2">
-        <input [formControlName]="FC_NAME.confirmPassword"
-               type="password"
-               class="form-control" placeholder="Confirm password">
-        <div *ngIf="signUpForm.get('confirmpassword').touched" class="text-danger">
-            <ng-container *ngIf="signUpForm.errors; else noError">
-                <span class="text-danger">{{ signUpForm.errors.valueNotMatch.messageErr }}</span>
-            </ng-container>
-            <ng-template #noError></ng-template>
+    <div class="form-group col-md-12 d-flex flex-column gap-2 mb-2 position-relative">
+        <input  [formControlName]="FC_NAME.confirmpassword"
+                [type]="showConfirmPassword ? 'text' : 'password'" placeholder="Confirm Password"
+                class="form-control"
+        >
+        <span class="icon-input"
+              (click)="toggleConfirmPasswordVisibility()"
+        >
+          <i class="bi"
+              [ngClass]="{'bi-eye': showPassword, 'bi-eye-slash': !showPassword}">
+          </i>
+        </span>
+        <div  *ngIf="signUpForm.get('confirmpassword').touched"
+              class="text-danger">
+              <ng-container *ngIf="signUpForm.errors; else noError">
+                  <span class="text-danger">
+                    {{ signUpForm.errors.valueNotMatch.messageErr }}
+                  </span>
+              </ng-container>
         </div>
     </div>
     <!--    Date of Birth-->
@@ -82,7 +111,6 @@
             <select [formControlName]="FC_NAME.daydate"
                     class="form-select"
             >
-                <option selected></option>
                 <option *ngFor="let day of getDays()"
                         [value]="day"
                 >
@@ -92,14 +120,24 @@
         </div>
         <div class="form-group col-md-4 mb-2">
             <select [formControlName]="FC_NAME.monthdate"
-                    class="form-select">
-                <option *ngFor="let month of getMonths()" [value]="month">{{ month }}</option>
+                    class="form-select"
+            >
+                <option *ngFor="let month of getMonths()"
+                        [value]="month"
+                >
+                    {{ month }}
+                </option>
             </select>
         </div>
         <div class="form-group col-md-4 mb-2">
-            <select [formControlName]="FC_NAME.yeardate" class="form-select">
-                <option selected></option>
-                <option *ngFor="let year of getYears()" [value]="year">{{ year }}</option>
+            <select [formControlName]="FC_NAME.yeardate"
+                    class="form-select"
+            >
+                <option *ngFor="let year of getYears()"
+                        [value]="year"
+                >
+                    {{ year }}
+                </option>
             </select>
         </div>
     </div>
@@ -111,8 +149,8 @@
         <div class="form-check">
             <input [formControlName]="FC_NAME.gender"
                    type="radio" value="male"
-                   class="form-check-input">
-            <label class="form-check-label">
+                   class="form-check-input" id="flexRadioDefault1">
+            <label class="form-check-label" for="flexRadioDefault1">
                 Male
             </label>
         </div>
@@ -150,11 +188,38 @@
         </span>
 </ng-template>
 
-<pre>
+<ng-template #noError></ng-template>
+
+<ng-template #tmplValidatePassword
+              let-message="message"
+>
+  <div class="requirements">
+    <strong>
+      {{message.title}}
+    </strong>
+    <ul>
+      <li [class]="message.length.class">
+        {{ message.length.message }}
+      </li>
+      <li [class]="message.uppercase.class">
+        {{ message.uppercase.message }}
+      </li>
+      <li [class]="message.lowercase.class">
+        {{ message.lowercase.message }}
+      </li>
+      <li [class]="message.numbers.class">
+        {{ message.numbers.message }}
+      </li>
+      <li [class]="message.symbols.class">
+        {{ message.symbols.message }}
+      </li>
+    </ul>
+  </div>
+</ng-template>
+<!-- <pre>
     {{
     signUpForm.get(FC_NAME.password).errors | json
     }}
 
-</pre>
+</pre> -->
 
-<!--<pre>{{ signUpForm.errors | json }}  </pre>-->

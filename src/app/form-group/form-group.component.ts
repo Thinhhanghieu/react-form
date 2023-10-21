@@ -1,193 +1,173 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
-import { FORM_SIGNUP_CONTROL_NAME } from '../constants/constants';
+import { Component } from "@angular/core";
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from "@angular/forms";
+import { FORM_SIGNUP_CONTROL_NAME } from "../constants/constants";
+import {
+  validateInputEmail,
+  validateInputPhone,
+  validateInputPassword,
+  validateMatchedPasswords,
+} from "../validators/form-validation";
 
-const validateMatchedControlsValue = (
-    firstControlName: string,
-    secondControlName: string
-) => {
-    return (formGroup: FormGroup): ValidationErrors | null => {
-        const firstControlValue = formGroup.get(firstControlName).value;
-        const secondControlValue = formGroup.get(secondControlName).value;
-
-        return firstControlValue === secondControlValue
-            ? null
-            : {
-                valueNotMatch: {
-                    firstControlValue,
-                    secondControlValue,
-                    messageErr: 'Password not match'
-                },
-            };
-    };
-};
-
+const currentYear = new Date().getFullYear();
+const defaultYear = currentYear - 18;
 @Component({
-    selector: 'app-form-group',
-    templateUrl: './form-group.component.html',
-    styleUrls: [ './form-group.component.scss' ]
+  selector: "app-form-group",
+  templateUrl: "./form-group.component.html",
+  styleUrls: ["./form-group.component.scss"],
 })
+export class FormGroupComponent {
+  FC_NAME = FORM_SIGNUP_CONTROL_NAME;
 
-export class FormGroupComponent implements OnInit {
+  showPassword: boolean = false;
+  showConfirmPassword: boolean = false;
 
-    FC_NAME = FORM_SIGNUP_CONTROL_NAME;
+  signUpForm: FormGroup = this.fb.group(
+    {
+      [FORM_SIGNUP_CONTROL_NAME.firstname]: [
+        "",
+        [Validators.minLength(6), Validators.required],
+      ],
+      [FORM_SIGNUP_CONTROL_NAME.lastname]: [
+        "",
+        [Validators.required]
+      ],
+      [FORM_SIGNUP_CONTROL_NAME.phone]: [
+        "",
+        [Validators.required, validateInputPhone],
+      ],
+      [FORM_SIGNUP_CONTROL_NAME.email]: [
+        "",
+        [Validators.required, validateInputEmail],
+      ],
+      [FORM_SIGNUP_CONTROL_NAME.password]: [
+        "",
+        [Validators.required, validateInputPassword],
+      ],
+      [FORM_SIGNUP_CONTROL_NAME.confirmPassword]: [
+        "",
+        [Validators.required, validateInputPassword],
+      ],
+      [FORM_SIGNUP_CONTROL_NAME.daydate]: [
+        1,
+        [Validators.required]
+      ],
+      [FORM_SIGNUP_CONTROL_NAME.monthdate]: [
+        "January",
+        [Validators.required]
+      ],
+      [FORM_SIGNUP_CONTROL_NAME.yeardate]: [
+        defaultYear, [Validators.required]
+      ],
+      [FORM_SIGNUP_CONTROL_NAME.gender]: [
+        "",
+        [Validators.required]
+      ],
+    },
+    {
+      validators: [
+        validateMatchedPasswords(
+          this.FC_NAME.password,
+          this.FC_NAME.confirmPassword
+        ),
+      ],
+    }
+  );
 
-    signUpForm: FormGroup = this.fb.group({
-            [FORM_SIGNUP_CONTROL_NAME.firstname]: [
-                '',
-                [
-                    Validators.minLength(6),
-                    Validators.required
-                ]
-            ],
-            [FORM_SIGNUP_CONTROL_NAME.lastname]: [
-                '',
-                Validators.compose([
-                    Validators.required,
-                ])
-            ],
-            [FORM_SIGNUP_CONTROL_NAME.phone]: [
-                '',
-                [
-                    Validators.required,
-                    this.isPhoneNumber
-                ]
-            ],
-            [FORM_SIGNUP_CONTROL_NAME.email]: [
-                '',
-                [
-                    Validators.required,
-                    this.isEmailAddress
-                ]
-            ],
-            [FORM_SIGNUP_CONTROL_NAME.password]: [
-                '',
-                [
-                    Validators.required,
-                    this.isPassword
-                ]
-            ],
-            [FORM_SIGNUP_CONTROL_NAME.confirmPassword]: [
-                '',
-                [
-                    Validators.required,
-                    this.isPassword
-                ]
-            ],
-            [FORM_SIGNUP_CONTROL_NAME.daydate]: [
-                '',
-                Validators.compose([
-                    Validators.required,
-                ])
-            ],
-            [FORM_SIGNUP_CONTROL_NAME.monthdate]: [
-                '',
-                Validators.compose([
-                    Validators.required,
-                ])
-            ],
-            [FORM_SIGNUP_CONTROL_NAME.yeardate]: [
-                '',
-                Validators.compose([
-                    Validators.required,
-                ])
-            ],
-            [FORM_SIGNUP_CONTROL_NAME.gender]: [
-                '',
-                Validators.compose([
-                    Validators.required,
-                ])
-            ],
-        },
-        {
-            validators: [
-                validateMatchedControlsValue('password', 'confirmpassword'),
-            ]
-        }
-    );
+  constructor(private fb: FormBuilder) {}
 
+  checkKeyUp(event: KeyboardEvent) {
+    if (event.key.startsWith("Arrow")) {
+      event.preventDefault();
+    }
+  }
 
-    constructor(
-        private fb: FormBuilder,
+  getDays(): number[] {
+    const days: number[] = [];
+    const month = this.signUpForm.get(this.FC_NAME.monthdate).value;
+    if (
+      month === "January" ||
+      month === "March" ||
+      month === "May" ||
+      month === "July" ||
+      month === "August" ||
+      month === "October" ||
+      month === "December"
     ) {
+      for (let i = 1; i <= 31; i++) {
+        days.push(i);
+      }
+    } else if (
+      month === "April" ||
+      month === "June" ||
+      month === "September" ||
+      month === "November"
+    ) {
+      for (let i = 1; i <= 30; i++) {
+        days.push(i);
+      }
+    } else if (month === "February") {
+      const year = this.signUpForm.get(this.FC_NAME.yeardate).value;
+      const isLeapYear =
+        (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+      const maxDays = isLeapYear ? 29 : 28;
+      for (let i = 1; i <= maxDays; i++) {
+        days.push(i);
+      }
     }
+    return days;
+  }
 
-    ngOnInit(): void {
-        this.signUpForm.get(this.FC_NAME.password).valueChanges
-            .subscribe((val) => {
-                console.log(this.signUpForm)
-            });
+  getMonths(): string[] {
+    return [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+  }
+
+  getYears(): number[] {
+    const years: number[] = [];
+    const currentYear = new Date().getFullYear();
+    for (let i = currentYear; i >= currentYear - 100; i--) {
+      years.push(i);
     }
+    return years;
+  }
 
-    isEmailAddress(control: FormControl): { [key: string]: any } | null {
-        const emailPattern = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
-        const email = control.value;
-        console.log(control);
-        if (emailPattern.test(email)) {
-            return null;
-        } else if (email === '') {
-            return { invalidEmail: true, message: 'Email is required' };
-        } else {
-            return { invalidEmail: true, message: 'Invalid email format' };
-        }
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmPasswordVisibility() {
+    this.showConfirmPassword = !this.showConfirmPassword;
+  }
+
+  numberOnly(event): boolean {
+    const charCode = event.which ? event.which : event.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+      return false;
     }
+    return true;
+  }
 
-
-    isPhoneNumber(control: FormControl) {
-        const phonePattern = /(84|0[3|5|7|8|9])+([0-9]{8})\b/g;
-        const phone = control.value;
-        if (phonePattern.test(phone)) {
-            return null;
-        } else if (phone === '') {
-            return { invalidPhone: true, message: 'Phone is required' };
-        } else {
-            return { invalidPhone: true, message: 'Invalid phone format' };
-        }
+  onSubmit() {
+    // trigger validation on submit
+    this.signUpForm.markAllAsTouched();
+    if (this.signUpForm.invalid) {
+      return;
     }
-
-    isPassword(control: FormControl) {
-        const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?])[A-Za-z\d#$@!%&*?]{8,30}$/;
-        const password = control.value;
-
-        if (passwordPattern.test(password)) {
-            return null;
-        } else if (password === '') {
-            return { invalidPassword: true, message: 'Password is required' };
-        } else {
-            return { invalidPassword: true, message: 'Invalid password format' };
-        }
-    }
-
-    getDays(): number[] {
-        const days: number[] = [];
-        for (let i = 1; i <= 31; i++) {
-            days.push(i);
-        }
-        return days;
-    }
-
-    getMonths(): number[] {
-        const months: number[] = [];
-        for (let i = 1; i <= 12; i++) {
-            months.push(i);
-        }
-        return months;
-    }
-
-    getYears(): number[] {
-        const years: number[] = [];
-        const currentYear = new Date().getFullYear();
-        for (let i = currentYear; i >= currentYear - 100; i--) {
-            years.push(i);
-        }
-        return years;
-    }
-
-    onSubmit() {
-        if (this.signUpForm.invalid) {
-            return;
-        }
-        console.log(this.signUpForm);
-    }
-
+  }
 }
