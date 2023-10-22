@@ -92,7 +92,7 @@
               (click)="toggleConfirmPasswordVisibility()"
         >
           <i class="bi"
-              [ngClass]="{'bi-eye': showPassword, 'bi-eye-slash': !showPassword}">
+              [ngClass]="{'bi-eye': showConfirmPassword, 'bi-eye-slash': !showConfirmPassword}">
           </i>
         </span>
         <div  *ngIf="signUpForm.get('confirmpassword').touched"
